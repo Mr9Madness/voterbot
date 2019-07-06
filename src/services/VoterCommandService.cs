@@ -8,15 +8,17 @@ using System.Threading.Tasks;
 
 namespace VoterBot.Services
 {
-    public class VoterCommands
+    public class VoterCommandService
     {
         private readonly DiscordSocketClient _sockerClient;
         private readonly CommandService _commands;
+        private readonly IServiceProvider _services;
 
-        public VoterCommands(ServiceProvider services)
+        public VoterCommandService(IServiceProvider services)
         {
-            _commands = services.GetRequiredService<CommandService>();
             _sockerClient = services.GetRequiredService<DiscordSocketClient>();
+            _commands = services.GetRequiredService<CommandService>();
+            _services = services;
 
             _sockerClient.MessageReceived += HandleMessageAsync;
             _commands.CommandExecuted += HandleCommandAsync;
@@ -24,7 +26,7 @@ namespace VoterBot.Services
 
         public async Task InitializeAsync()
         {
-            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), null);
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
         }
 
         private async Task HandleMessageAsync(SocketMessage arg)
@@ -37,7 +39,7 @@ namespace VoterBot.Services
 
             var context = new SocketCommandContext(_sockerClient, message);
 
-            await _commands.ExecuteAsync(context, argPos, null);
+            await _commands.ExecuteAsync(context, argPos, _services);
         }
 
         private async Task HandleCommandAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)

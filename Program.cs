@@ -20,26 +20,27 @@ namespace VoterBot
             {
                 using (DiscordSocketClient client = services.GetRequiredService<DiscordSocketClient>())
                 {
-                    await client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("DiscordToken"));
+                    await client.LoginAsync(TokenType.Bot, "NTg2NzAxMzc2OTM2MjE0NTI4.XR_sDQ.OdOzEhCGjbWVTcZw7FextOmPV8Q");
                     await client.StartAsync();
                     client.Ready += () =>
                     {
                         Console.WriteLine("Bot is connected!");
                         return Task.CompletedTask;
                     };
+
+                    await services.GetRequiredService<Services.VoterCommandService>().InitializeAsync();
+
+                    await Task.Delay(-1);
                 }
-
-                await services.GetRequiredService<Services.VoterCommands>().InitializeAsync();
             }
-
-            await Task.Delay(-1);
         }
 
         private ServiceProvider ConfigureServices() => new ServiceCollection()
             .AddSingleton<DiscordSocketClient>()
             .AddSingleton<CommandService>()
+            .AddDbContext<VoterBot.Models.VoterContext>()
+            .AddSingleton<Services.VoterCommandService>()
             .AddSingleton<Services.VoterDatabaseService>()
-            .AddSingleton<Services.VoterCommands>()
             .BuildServiceProvider();
     }
 }

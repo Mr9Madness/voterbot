@@ -375,3 +375,5 @@ healthchecksdb
 MigrationBackup/
 
 # End of https://www.gitignore.io/api/dotnetcore,visualstudio,visualstudiocode
+
+kube/scripts/
