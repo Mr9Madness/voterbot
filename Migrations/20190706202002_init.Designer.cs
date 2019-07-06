@@ -9,23 +9,37 @@ using VoterBot.Models;
 namespace voterbot.Migrations
 {
     [DbContext(typeof(VoterContext))]
-    [Migration("20190706012436_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20190706202002_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
+                .HasAnnotation("ProductVersion", "3.0.0-preview6.19304.10");
+
+            modelBuilder.Entity("VoterBot.Models.GuildChannel", b =>
+                {
+                    b.Property<ulong>("GuildId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<ulong>("ChannelId");
+
+                    b.HasKey("GuildId");
+
+                    b.ToTable("GuildChannel");
+                });
 
             modelBuilder.Entity("VoterBot.Models.Votes", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<ulong>("GuildId");
+
                     b.Property<string>("Name");
 
-                    b.Property<long>("UserId");
+                    b.Property<ulong>("UserId");
 
                     b.Property<string>("VoteUrl");
 

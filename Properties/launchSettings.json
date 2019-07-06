@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "voterbot": {
+      "commandName": "Project",
+      "workingDirectory": "."
+    }
+  }
+}

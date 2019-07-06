@@ -1,5 +1,4 @@
 using System;
-using Discord;
 
 namespace VoterBot.Models
 {
@@ -7,6 +6,7 @@ namespace VoterBot.Models
     {
         public Guid Id { get; set; }
         public ulong UserId { get; set; }
+        public ulong GuildId { get; set; }
         public string Name { get; set; }
         public string VoteUrl { get; set; }
     }
