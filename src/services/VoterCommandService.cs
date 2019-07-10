@@ -46,7 +46,7 @@ namespace VoterBot.Services
             if( !command.IsSpecified ) return;
             if( result.IsSuccess ) return;
 
-            await context.Channel.SendMessageAsync($"Error: {result.Error} Reason: {result.ErrorReason}");
+            await context.Channel.SendMessageAsync($"Error: {result.ErrorReason}");
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -36,14 +37,14 @@ public class OptionModule : ModuleBase<SocketCommandContext>
     }
 
     [Command("remove"), Summary("Removes an option the user created with the specified id or the last one if left empty")]
-    public async Task RemoveAsync(Guid optionId = default)
+    public async Task RemoveAsync([Remainder] string optionId = null)
     {
         VoterBot.Models.Votes vote = null;
-        if (optionId == default(Guid))
+        if (string.IsNullOrWhiteSpace(optionId) || Guid.Parse(optionId) == default(Guid))
             vote = VoterContext.Votes.Last(v => v.UserId == Context.User.Id);
         else
         {
-            vote = VoterContext.Votes.Find(optionId);
+            vote = VoterContext.Votes.Find(Guid.Parse(optionId));
             if (vote.UserId != Context.User.Id)
             {
                 await ReplyAsync("This is not a option you added.");
@@ -56,10 +57,10 @@ public class OptionModule : ModuleBase<SocketCommandContext>
         await ReplyAsync("Option removed.");
     }
 
-    [Command("remove"), Summary("Removes an option with the specified id (only for admins)"), RequireUserPermission(Discord.GuildPermission.Administrator)]
-    public async Task RemoveAdminAsync(Guid optionId)
+    [Command("adminremove"), Summary("Removes an option with the specified id (only for admins)"), RequireUserPermission(Discord.GuildPermission.Administrator)]
+    public async Task RemoveAdminAsync([Remainder] string optionId)
     {
-        VoterContext.Votes.Remove(VoterContext.Votes.Find(optionId));
+        VoterContext.Votes.Remove(VoterContext.Votes.Find(Guid.Parse(optionId)));
         await VoterContext.SaveChangesAsync();
 
         await ReplyAsync("Option removed.");
@@ -68,10 +69,10 @@ public class OptionModule : ModuleBase<SocketCommandContext>
     [Command("list"), Summary("Lists the option list")]
     public async Task List()
     {
-        await Context.Channel.SendMessageAsync(VotesToString(VoterContext.Votes.Where(s => s.GuildId == Context.Guild.Id)));
+        await ReplyAsync(VotesToString(VoterContext.Votes.Where(s => s.GuildId == Context.Guild.Id)));
     }
 
-    public string VotesToString(IQueryable<VoterBot.Models.Votes> enumerable)
+    public string VotesToString(IEnumerable<VoterBot.Models.Votes> enumerable)
     {
         string value = "";
         foreach (VoterBot.Models.Votes vote in enumerable)
