@@ -12,5 +12,6 @@ namespace VoterBot.Models
 
         public string Name { get; set; }
         public string VoteUrl { get; set; }
+        public DateTime VoteDate { get; set; }
     }
 }

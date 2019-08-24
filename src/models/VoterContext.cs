@@ -7,7 +7,7 @@ namespace VoterBot.Models
         public DbSet<Votes> Votes { get; set; }
         public DbSet<GuildChannel> GuildChannel { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring( DbContextOptionsBuilder optionsBuilder )
         {
             optionsBuilder.UseSqlite("Data Source=votes.db");
         }

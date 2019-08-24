@@ -18,7 +18,11 @@ namespace VoterBot
         {
             using ServiceProvider services = ConfigureServices();
             using DiscordSocketClient client = services.GetRequiredService<DiscordSocketClient>();
-            await client.LoginAsync(TokenType.Bot, "NTk4NTc3NTEyNzY3MDI5MjY4.XSYq3w.klgu0OmsIYOM6hix4VWNmhP_WdI"); // NTg2NzAxMzc2OTM2MjE0NTI4.XR_sDQ.OdOzEhCGjbWVTcZw7FextOmPV8Q
+#if DEBUG
+            await client.LoginAsync(TokenType.Bot, "NTk4NTc3NTEyNzY3MDI5MjY4.XSYq3w.klgu0OmsIYOM6hix4VWNmhP_WdI");
+#elif RELEASE
+            await client.LoginAsync(TokenType.Bot, "NTg2NzAxMzc2OTM2MjE0NTI4.XR_sDQ.OdOzEhCGjbWVTcZw7FextOmPV8Q");
+#endif
             await client.StartAsync();
             client.Ready += () =>
             {
