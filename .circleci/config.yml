@@ -15,10 +15,14 @@ jobs:
     working_directory: ~/voterbot/build
     steps:
       - run:
+          name: Stop service
+          command: ssh $SSH_USER@$SSH_HOST "sudo service voterbot stop"
+      - run:
           name: Deploy Over SSH
-          command: |
-            ssh $SSH_USER@$SSH_HOST "<remote deploy command>"
-
+          command: sftp $SSH_USER@$SSH_HOST put ~/voterbot/build ~/voter_bot
+      - run:
+          name: Start screen
+          command: ssh $SSH_USER@$SSH_HOST "sudo service voterbot start"
 workflows:
   version: 2
   build-and-deploy:
