@@ -1,0 +1,32 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: microsoft/dotnet:3.0-sdk
+    working_directory: ~/voterbot
+    steps:
+      - checkout
+      - run:
+          name: Publish build
+          command: dotnet publish -c Release -r linux-x64 -o ~/voterbot/build
+  deploy:
+    machine:
+      enabled: true
+    working_directory: ~/voterbot/build
+    steps:
+      - run:
+          name: Deploy Over SSH
+          command: |
+            ssh $SSH_USER@$SSH_HOST "<remote deploy command>"
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
