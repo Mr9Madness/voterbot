@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  deploy:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview8-alpine3.9
     working_directory: ~/voterbot
@@ -9,15 +9,9 @@ jobs:
       - run:
           name: Publish build
           command: dotnet publish -c Release -r linux-x64 -o ~/voterbot/build
-  deploy:
-    machine:
-      enabled: true
-    working_directory: ~/voterbot/build
-    steps:
-      - checkout
       - run:
-          name: Deploy Over SSH
-          command: sftp admin@ssh.mr9madness.com:/var/bots/voterbot/prod <<< $'put ~/voterbot/build/*'
+          name: Deploy Over SSH FTP
+          command: sftp admin@ssh.mr9madness.com:/var/bots/voterbot/prod <<< $'put -r ~/voterbot/build/*'
       - run:
           name: Restart service
           command: ssh $SSH_USER@$SSH_HOST "sudo service voterbot restart"
@@ -25,10 +19,7 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build
       - deploy:
-          requires:
-            - build
           filters:
             branches:
               only: master
