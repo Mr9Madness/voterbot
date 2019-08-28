@@ -4,6 +4,8 @@ jobs:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:3.0.100-preview8-alpine3.9
     working_directory: ~/voterbot
+    machine:
+      enabled: true
     steps:
       - checkout
       - run:
