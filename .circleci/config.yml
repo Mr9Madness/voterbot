@@ -14,10 +14,10 @@ jobs:
       enabled: true
     working_directory: ~/voterbot/build
     steps:
-      - run: ls ~/voterbot
+      - run: ls ~/voterbot/build
       - run:
           name: Deploy Over SSH
-          command: sftp admin@ssh.mr9madness.com:/var/bots/voterbot/prod <<< $'put ~/voterbot/build/'
+          command: sftp admin@ssh.mr9madness.com:/var/bots/voterbot/prod <<< $'put ~/voterbot/build'
       - run:
           name: Restart service
           command: ssh $SSH_USER@$SSH_HOST "sudo service voterbot restart"
