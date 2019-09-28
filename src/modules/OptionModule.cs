@@ -73,8 +73,17 @@ public class OptionModule : ModuleBase<SocketCommandContext>
         await ReplyAsync($"Option {vote.Name} removed.");
     }
 
+    [Command("adminremoveall"), Summary("Removes all options (only for admins)"), RequireUserPermission(Discord.GuildPermission.Administrator)]
+    public async Task RemoveAllAsAdminAsync([Remainder] string optionId)
+    {
+        VoterContext.Votes.RemoveRange(VoterContext.Votes.Where(o => o.GuildId == Context.Guild.Id));
+        await VoterContext.SaveChangesAsync();
+
+        await ReplyAsync("Option removed.");
+    }
+
     [Command("adminremove"), Summary("Removes an option with the specified id (only for admins)"), RequireUserPermission(Discord.GuildPermission.Administrator)]
-    public async Task RemoveAdminAsync( [Remainder] string optionId )
+    public async Task RemoveAsAdminAsync( [Remainder] string optionId )
     {
         VoterContext.Votes.Remove(VoterContext.Votes.Find(Guid.Parse(optionId)));
         await VoterContext.SaveChangesAsync();
@@ -98,7 +107,7 @@ public class OptionModule : ModuleBase<SocketCommandContext>
 
     private string GetNameFromLink( Uri entry ) => ( entry.Host ) switch
     {
-        "myanimelist.net" => entry.Segments[^1].Replace('_', ' '),
+        "myanimelist.net" => entry.Segments[entry.Segments.Length - 1].Replace('_', ' '),
         _ => "No name can be found"
     };
 
