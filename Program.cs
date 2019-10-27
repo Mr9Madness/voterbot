@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
@@ -9,20 +10,14 @@ namespace VoterBot
 {
     class Program
     {
-        static void Main()
+        static async Task Main()
         {
-            new Program().MainAsync().GetAwaiter().GetResult();
-        }
+            IConfiguration configuration = new ConfigurationBuilder().AddEnvironmentVariables().AddUserSecrets<Program>().Build();
 
-        public async Task MainAsync()
-        {
             using ServiceProvider services = ConfigureServices();
             using DiscordSocketClient client = services.GetRequiredService<DiscordSocketClient>();
-#if DEBUG
-            await client.LoginAsync(TokenType.Bot, "NTk4NTc3NTEyNzY3MDI5MjY4.XSYq3w.klgu0OmsIYOM6hix4VWNmhP_WdI");
-#elif RELEASE
-            await client.LoginAsync(TokenType.Bot, "NTg2NzAxMzc2OTM2MjE0NTI4.XR_sDQ.OdOzEhCGjbWVTcZw7FextOmPV8Q");
-#endif
+            await client.LoginAsync(TokenType.Bot, configuration["BotKey"]);
+
             await client.StartAsync();
             client.Ready += () =>
             {
@@ -31,11 +26,10 @@ namespace VoterBot
             };
 
             await services.GetRequiredService<Services.VoterCommandService>().InitializeAsync();
-
             await Task.Delay(-1);
         }
 
-        private ServiceProvider ConfigureServices() => new ServiceCollection()
+        private static ServiceProvider ConfigureServices() => new ServiceCollection()
             .AddSingleton<DiscordSocketClient>()
             .AddSingleton<CommandService>()
             .AddDbContext<Models.VoterContext>()

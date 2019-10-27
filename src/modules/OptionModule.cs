@@ -74,7 +74,7 @@ public class OptionModule : ModuleBase<SocketCommandContext>
     }
 
     [Command("adminremoveall"), Summary("Removes all options (only for admins)"), RequireUserPermission(Discord.GuildPermission.Administrator)]
-    public async Task RemoveAllAsAdminAsync([Remainder] string optionId)
+    public async Task RemoveAllAsAdminAsync( [Remainder] string optionId )
     {
         VoterContext.Votes.RemoveRange(VoterContext.Votes.Where(o => o.GuildId == Context.Guild.Id));
         await VoterContext.SaveChangesAsync();
@@ -105,10 +105,10 @@ public class OptionModule : ModuleBase<SocketCommandContext>
         return value;
     }
 
-    private string GetNameFromLink( Uri entry ) => ( entry.Host ) switch
+    private string GetNameFromLink( Uri entry ) => entry.Host switch
     {
-        "myanimelist.net" => entry.Segments[entry.Segments.Length - 1].Replace('_', ' '),
-        _ => "No name can be found"
+        "myanimelist.net" => entry.Segments[^1].Replace('_', ' '),
+        _ => "No name can be found",
     };
 
     public GuildChannel GetOutputChannel()
