@@ -6,9 +6,7 @@
     <TieredCompilationQuickJit>true</TieredCompilationQuickJit>
 
     <PublishTrimmed>true</PublishTrimmed>
-    <PublishReadyToRun>true</PublishReadyToRun>
-
-    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishReadyToRun>false</PublishReadyToRun>
     <UserSecretsId>a5648471-7da9-47b0-a266-851aa26b3788</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>

@@ -74,19 +74,24 @@ public class OptionModule : ModuleBase<SocketCommandContext>
     }
 
     [Command("adminremoveall"), Summary("Removes all options (only for admins)"), RequireUserPermission(Discord.GuildPermission.Administrator)]
-    public async Task RemoveAllAsAdminAsync( [Remainder] string optionId )
+    public async Task RemoveAllAsAdminAsync()
     {
-        VoterContext.Votes.RemoveRange(VoterContext.Votes.Where(o => o.GuildId == Context.Guild.Id));
+        var allvotes = VoterContext.Votes.Where(o => o.GuildId == Context.Guild.Id);
+        VoterContext.Votes.RemoveRange(allvotes);
         await VoterContext.SaveChangesAsync();
+        foreach (var vote in allvotes)
+            await RemoveOption(vote);
 
-        await ReplyAsync("Option removed.");
+        await ReplyAsync("Options removed.");
     }
 
     [Command("adminremove"), Summary("Removes an option with the specified id (only for admins)"), RequireUserPermission(Discord.GuildPermission.Administrator)]
     public async Task RemoveAsAdminAsync( [Remainder] string optionId )
     {
-        VoterContext.Votes.Remove(VoterContext.Votes.Find(Guid.Parse(optionId)));
+        var vote = VoterContext.Votes.Find(Guid.Parse(optionId));
+        VoterContext.Votes.Remove(vote);
         await VoterContext.SaveChangesAsync();
+        await RemoveOption(vote);
 
         await ReplyAsync("Option removed.");
     }

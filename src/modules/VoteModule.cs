@@ -16,13 +16,24 @@ namespace VoterBot.Modules
         public VoterContext VoterContext { get; set; }
 
         [Command("list"), Summary("Lists the votes with options")]
-        public async Task List()
+        public async Task List( [Remainder] [Summary("top {number} of entries to get")] string entriesAmount = "top3" )
         {
+            if( !entriesAmount.StartsWith("top") )
+            {
+                await ReplyAsync("Command doesn't include a top {number}");
+                return;
+            }
+            if( !VoterContext.Votes.Any(v => v.GuildId == Context.Guild.Id) )
+            {
+                await ReplyAsync("No votes");
+                return;
+            }
+            int amount = int.Parse( string.Join("", entriesAmount.Split(' ')).Substring(3, 1) );
             SocketTextChannel guildChannel = GetOutputGuildChannel().Channel;
 
             ICollection<(string name, int up, int down, int total)> values = new List<(string name, int up, int down, int total)>();
 
-            foreach( Votes v in VoterContext.Votes.Where(v => v.GuildId == Context.Guild.Id) )
+            foreach( Votes v in VoterContext.Votes.Take(amount).Where(v => v.GuildId == Context.Guild.Id) )
             {
                 if( v.MessageId == default ) return;
                 IUserMessage message = await guildChannel.GetMessageAsync(v.MessageId) as IUserMessage;
@@ -34,14 +45,11 @@ namespace VoterBot.Modules
             }
 
             string content = "";
+            int num = 1;
             foreach( (string name, int up, int down, int total) in values.OrderByDescending(v => v.total) )
-            {
-                content += $"{name}\r\nTotal: {total} Up: {up} Down: {down}\r\n\r\n";
-            }
-            if( string.IsNullOrWhiteSpace(content) )
-                await ReplyAsync("No votes");
-            else
-                await ReplyAsync(content);
+                content += $"{ordinal(num++)} - {name}: Total {total} - Up {up} Down {down}\r\n";
+
+            await ReplyAsync(content);
         }
 
         [Group("channel")]
@@ -79,5 +87,19 @@ namespace VoterBot.Modules
             return guildChannel;
         }
 
+        private string ordinal(int number)
+        {
+            var ones = number % 10;
+            var tens = Math.Floor(number / 10f) % 10;
+            if (tens == 1) return number + "th";
+
+            switch (ones)
+            {
+                case 1: return number + "st";
+                case 2: return number + "nd";
+                case 3: return number + "rd";
+                default: return number + "th";
+            }
+        }
     }
 }
